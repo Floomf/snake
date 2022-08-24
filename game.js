@@ -30,8 +30,8 @@ let run = function() {
 function start() {
     state = "playing";
     score = 0;
-    snake = new Snake(3, 3, "right");
-    gameIntervalId = setInterval(run, 100);
+    snake = new Snake(3.5, 3.5, "right");
+    gameIntervalId = setInterval(run, 40);
     spawnFruit();
     drawScore();
 }
@@ -74,29 +74,41 @@ function drawGame() {
         }
     }
 
-    let current = snake.head;
-    while (current !== null) {
-        //console.log("drawing block at " + current.x + " , " + current.y);
+    ctxGame.fillStyle = "green";
+    ctxGame.beginPath();
+    ctxGame.arc(SQUARE_SIZE * snake.head.x, SQUARE_SIZE * snake.head.y, SQUARE_SIZE / 3, Math.PI * 2, false);
+    ctxGame.fill();
+
+
+    let current = snake.head.next;
+    while (current.next !== null) {
         ctxGame.beginPath();
-        ctxGame.lineWidth = 1;
-        ctxGame.fillStyle = "green";
-        ctxGame.rect(SQUARE_SIZE * current.x, SQUARE_SIZE * current.y, SQUARE_SIZE, SQUARE_SIZE);
+        //ctxGame.lineWidth = 1;
+        ctxGame.rect(SQUARE_SIZE * current.x - 15, SQUARE_SIZE * current.y - 15, 30, 30);
         ctxGame.fill();
-        ctxGame.stroke();
+        //ctxGame.stroke();
         current = current.next;
     }
 
+    ctxGame.beginPath();
+    ctxGame.arc(SQUARE_SIZE * snake.tail.x, SQUARE_SIZE * snake.tail.y, SQUARE_SIZE / 3, Math.PI * 2, false);
+    ctxGame.fill();
+
+    drawFruit();
+}
+
+function drawFruit() {
     ctxGame.fillStyle = "red";
     ctxGame.beginPath();
-    ctxGame.rect(fruitX * SQUARE_SIZE, fruitY * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
+    ctxGame.arc(fruitX * SQUARE_SIZE, fruitY * SQUARE_SIZE, SQUARE_SIZE / 3, Math.PI * 2, false);
     ctxGame.fill();
     ctxGame.stroke();
 }
 
 function spawnFruit() {
     do {
-        fruitX = Math.floor(Math.random() * GRID_WIDTH);
-        fruitY = Math.floor(Math.random() * GRID_HEIGHT);
+        fruitX = Math.floor(Math.random() * GRID_WIDTH) + 0.5;
+        fruitY = Math.floor(Math.random() * GRID_HEIGHT) + 0.5;
     } while (snake.occupies(fruitX, fruitY))
 }
 
@@ -129,7 +141,7 @@ function changeDirection(e) {
    if (direction === undefined || !snake.canMove(direction)) {
        return;
    }
-   snake.direction = direction;
+   snake.nextDirection = direction;
 }
 
 document.addEventListener("keydown", e => {

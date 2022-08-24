@@ -14,14 +14,22 @@ class Snake {
 
     constructor(startX, startY, direction) {
         this.head = new SnakeNode(startX, startY, null, null);
-        this.head.next = new SnakeNode(startX - 1, startY, null, this.head);
+        this.head.next = new SnakeNode(startX - 0.25, startY, null, this.head);
         this.tail = this.head.next;
-        this.direction = direction;
+        this.currDirection = direction;
+        this.nextDirection = direction;
+        this.move(false);
+        this.move(false);
+        this.grow();
+        this.grow();
         this.print();
     }
 
     move(removeTail = true) {
-        this.print();
+        //this.print();
+        if (this.head.x % 1 == 0.5 && this.head.y % 1 == 0.5) {
+            this.currDirection = this.nextDirection;
+        }
         this.head = new SnakeNode(this.getNextX(), this.getNextY(), this.head, null);
         this.head.next.prev = this.head;
         if (removeTail) {
@@ -32,22 +40,25 @@ class Snake {
 
     grow() {
         this.move(false);
+        this.move(false);
+        this.move(false);
+        this.move(false);
     }
 
     getNextX() {
-        if (this.direction === "right") {
-            return this.head.x + 1;
-        } else if (this.direction === "left") {
-            return this.head.x - 1;
+        if (this.currDirection === "right") {
+            return this.head.x + 0.25;
+        } else if (this.currDirection === "left") {
+            return this.head.x - 0.25;
         }
         return this.head.x;
     }
 
     getNextY() {
-        if (this.direction === "up") {
-            return this.head.y - 1;
-        } else if (this.direction === "down") {
-            return this.head.y + 1;
+        if (this.currDirection === "up") {
+            return this.head.y - 0.25;
+        } else if (this.currDirection === "down") {
+            return this.head.y + 0.25;
         }
         return this.head.y;
     }
