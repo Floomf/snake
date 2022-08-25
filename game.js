@@ -1,11 +1,12 @@
-const SQUARE_SIZE = 40;
-const GRID_WIDTH = 15;
-const GRID_HEIGHT = 15;
-
 const gameCanvas = document.getElementById("game");
 const statsCanvas = document.getElementById("stats");
 const ctxGame = gameCanvas.getContext("2d");
 const ctxStats = statsCanvas.getContext("2d");
+
+const GRID_WIDTH = 15;
+const GRID_HEIGHT = 15;
+const SQUARE_SIZE = gameCanvas.width / GRID_WIDTH;
+const MAX_OFFSET = 20;
 
 let gameIntervalId;
 
@@ -32,7 +33,7 @@ function start() {
     spawnFruit();
     drawScore();
 
-    ctxGame.lineWidth = 30;
+    ctxGame.lineWidth = 3 * SQUARE_SIZE / 4;
     ctxGame.strokeStyle = "green"; 
     ctxGame.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
@@ -91,25 +92,26 @@ function fillSquare(row, col) {
     ctxGame.fill();
 }
 
+function drawSnakeCircle(x, y) {
+    ctxGame.beginPath();
+    ctxGame.fillStyle = "green";
+    ctxGame.arc(x, y, 3 * SQUARE_SIZE / 8, 0, Math.PI * 2);
+    ctxGame.fill();
+}
+
 function drawSnake() {
     fillSquare(snake.tail.y, snake.tail.x);
     //clear square tail was in previously (because its circle is drawn in that square when the tail is entering another square)
     fillSquare(snake.tail.y - snake.tail.getNextYOffset(snake.tail.firstDirection), snake.tail.x - snake.tail.getNextXOffset(snake.tail.firstDirection));
 
     //draw head
-    ctxGame.beginPath();
-    ctxGame.fillStyle = "green";
-    ctxGame.arc(snake.head.getCanvasX(), snake.head.getCanvasY(), 15, 0, Math.PI * 2, false);
-    ctxGame.fill();
+    drawSnakeCircle(snake.head.getCanvasX(), snake.head.getCanvasY());
 
     //draw tail
-    ctxGame.beginPath();
-    ctxGame.arc(snake.tail.getCanvasX(), snake.tail.getCanvasY(), 15, 0, Math.PI * 2, false);
-    ctxGame.fill();
+    drawSnakeCircle(snake.tail.getCanvasX(), snake.tail.getCanvasY())
 
 
     ctxGame.beginPath();
-    ctxGame.lineWidth = 30;
     ctxGame.strokeStyle = "green"; 
     //redraw the back of the snake that was cleared in the 2 squares
     if (snake.tail.isLeavingSquare()) {
@@ -128,9 +130,7 @@ function drawSnake() {
         ctxGame.stroke();
 
         //draw circle in tail's square
-        ctxGame.beginPath();
-        ctxGame.arc(snake.tail.getXOfSquareCenter(), snake.tail.getYOfSquareCenter(), 15, 0, Math.PI * 2, false);
-        ctxGame.fill();
+        drawSnakeCircle(snake.tail.getXOfSquareCenter(), snake.tail.getYOfSquareCenter());
     }
 }
 
@@ -173,11 +173,11 @@ function drawMenu() {
 }
 
 function inputDirection(e) {
-   let direction = snake.keyToDirection(e.key);
-   if (direction !== undefined) {
-    snake.queueDirection(direction);
-    console.log(snake.directions);
-   }
+    let direction = snake.keyToDirection(e.key);
+    if (direction !== undefined) {
+        snake.queueDirection(direction);
+        e.preventDefault();
+    }
 }
 
 document.addEventListener("keydown", e => {

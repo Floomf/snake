@@ -49,11 +49,11 @@ class SnakeNode {
     }
 
     getXOfSquareCenter() {
-        return SQUARE_SIZE * this.x + MAX_OFFSET;
+        return SQUARE_SIZE * this.x + (SQUARE_SIZE / 2);
     }
 
     getYOfSquareCenter() {
-        return SQUARE_SIZE * this.y + MAX_OFFSET;
+        return SQUARE_SIZE * this.y + (SQUARE_SIZE / 2);
     }
     
     isLeavingSquare() {
@@ -62,8 +62,6 @@ class SnakeNode {
     }
 
 }
-
-const MAX_OFFSET = 20;
 
 class Snake {
 
