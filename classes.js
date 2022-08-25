@@ -22,22 +22,43 @@ class SnakeNode {
         this.canvasYOffset += this.getNextYOffset();
     }
 
-    getNextXOffset() {
-        if (this.direction === "right") {
+    getNextXOffset(direction = this.direction) {
+        if (direction === "right") {
             return 1;
-        } else if (this.direction === "left") {
+        } else if (direction === "left") {
             return -1;
         }
         return 0;
     }
 
-    getNextYOffset() {
-        if (this.direction === "up") {
+    getNextYOffset(direction = this.direction) {
+        if (direction === "up") {
             return -1;
-        } else if (this.direction === "down") {
+        } else if (direction === "down") {
             return 1;
         }
         return 0;
+    }
+
+    getCanvasX() {
+        return SQUARE_SIZE * this.x + (SQUARE_SIZE / MAX_OFFSET * this.canvasXOffset);
+    }
+
+    getCanvasY() {
+        return SQUARE_SIZE * this.y + (SQUARE_SIZE / MAX_OFFSET * this.canvasYOffset);
+    }
+
+    getXOfSquareCenter() {
+        return SQUARE_SIZE * this.x + MAX_OFFSET;
+    }
+
+    getYOfSquareCenter() {
+        return SQUARE_SIZE * this.y + MAX_OFFSET;
+    }
+    
+    isLeavingSquare() {
+        return (this.direction === "right" && this.canvasXOffset > MAX_OFFSET / 2) || (this.direction === "left" && this.canvasXOffset < MAX_OFFSET / 2)
+            || (this.direction === "down" && this.canvasYOffset > MAX_OFFSET / 2) || (this.direction === "up" && this.canvasYOffset < MAX_OFFSET / 2);
     }
 
 }
@@ -60,15 +81,12 @@ class Snake {
     }
 
     moveOffsets() {
-        console.log("Moving");
         let curr = this.head;
         while (curr !== null) {
-            //this.print();
             curr.moveOffset();
             curr = curr.next;
         }
         if (this.head.canvasXOffset == MAX_OFFSET / 2 && this.head.canvasYOffset == MAX_OFFSET / 2) {
-            //console.log("Switching directions");
             curr = this.tail;
             while (curr.prev !== null) {
                 curr.direction = curr.prev.direction;
@@ -82,8 +100,7 @@ class Snake {
     }
 
     moveNodes() {
-        //calculate new head offsets 
-        //offsets (x, y) -> new offsets (x, y)
+        //calculating new head offsets
         //20, 0 -> 20, 40
         //0, 20 -> 40, 20
         //20, 40 -> 20, 0
@@ -100,7 +117,7 @@ class Snake {
             this.tail.next = null;
         }
 
-        //reset the reset the nodes, giving the illusion that they carry over
+        //reset the nodes, seamlessly moving the snake position over
         let curr = this.tail;
         while (curr.prev !== null) {
             curr.canvasXOffset = curr.startXOffset;
@@ -113,26 +130,6 @@ class Snake {
     grow() {
         this.growing = true;
     }
-
-    /*move(removeTail = true) {
-        //this.print();
-        if (this.head.x % 1 == 0.5 && this.head.y % 1 == 0.5) {
-            this.currDirection = this.nextDirection;
-        }
-        this.head = new SnakeNode(this.getNextX(), this.getNextY(), this.head, null);
-        this.head.next.prev = this.head;
-        if (removeTail) {
-            this.tail = this.tail.prev;
-            this.tail.next = null;
-        }
-    }
-
-    grow() {
-        this.move(false);
-        this.move(false);
-        this.move(false);
-        this.move(false);
-    }*/
 
     getNextX() {
         if (this.head.direction === "right") {

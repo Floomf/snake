@@ -22,10 +22,7 @@ f.load().then(font => {
     drawMenu();
 }, err => console.log(err));
 
-let run = function() {
-    update();
-    drawGame();
-}
+let run = update;
 
 function start() {
     state = "playing";
@@ -34,6 +31,16 @@ function start() {
     gameIntervalId = setInterval(run, 1000 / 120);
     spawnFruit();
     drawScore();
+
+    ctxGame.lineWidth = 30;
+    ctxGame.strokeStyle = "green"; 
+    ctxGame.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+
+    drawBoard();
+    ctxGame.beginPath();
+    ctxGame.moveTo(snake.head.getCanvasX(), snake.head.getCanvasY());
+    ctxGame.lineTo(snake.tail.getCanvasX(), snake.tail.getCanvasY());
+    ctxGame.stroke();
 }
 
 function end() {
@@ -48,6 +55,8 @@ function update() {
         end();
         return;
     }
+    drawFruit();
+    drawSnake();
 }
 
 function checkCollision() {
@@ -62,48 +71,74 @@ function checkCollision() {
    }
 }
 
-function drawGame() {
-    ctxGame.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+function drawBoard() {
     for (let row = 0; row < GRID_HEIGHT; row++) {
         for (let col = 0; col < GRID_WIDTH; col++) {
-            ctxGame.beginPath();
-            ctxGame.lineWidth = 1;
-            ctxGame.fillStyle = "white";
-            ctxGame.rect(SQUARE_SIZE * col, SQUARE_SIZE * row, SQUARE_SIZE, SQUARE_SIZE);
-            ctxGame.fill();
-            ctxGame.stroke();
+            fillSquare(row, col);
         }
     }
+}
 
-    ctxGame.fillStyle = "green";
-    /*ctxGame.beginPath();
-    ctxGame.arc(SQUARE_SIZE * snake.head.x, SQUARE_SIZE * snake.head.y, SQUARE_SIZE / 3, Math.PI * 2, false);
-    ctxGame.fill();*/
-
-
-    let current = snake.head;
-    while (current !== null) {
-        ctxGame.beginPath();
-        //ctxGame.lineWidth = 1;
-        ctxGame.arc(SQUARE_SIZE * current.x + (2 * current.canvasXOffset), SQUARE_SIZE * current.y + (2 * current.canvasYOffset), 15, Math.PI * 2, false);
-        ctxGame.fill();
-        //ctxGame.stroke();
-        current = current.next;
+function fillSquare(row, col) {
+    console.log("Filling square at " + col + ", " + row);
+    if ((row % 2 == 0 && col % 2 == 1) || (row % 2 == 1 && col % 2 == 0)) {
+        ctxGame.fillStyle = "lightgrey";
+    } else {
+        ctxGame.fillStyle = "white";
     }
+    ctxGame.beginPath();
+    ctxGame.rect(SQUARE_SIZE * col, SQUARE_SIZE * row, SQUARE_SIZE, SQUARE_SIZE);
+    ctxGame.fill();
+}
 
-    /*ctxGame.beginPath();
-    ctxGame.arc(SQUARE_SIZE * snake.tail.x, SQUARE_SIZE * snake.tail.y, SQUARE_SIZE / 3, Math.PI * 2, false);
-    ctxGame.fill();*/
+function drawSnake() {
+    fillSquare(snake.tail.y, snake.tail.x);
+    //clear square tail was in previously (because its circle is drawn in that square when the tail is entering another square)
+    fillSquare(snake.tail.y - snake.tail.getNextYOffset(snake.tail.firstDirection), snake.tail.x - snake.tail.getNextXOffset(snake.tail.firstDirection));
 
-    drawFruit();
+    //draw head
+    ctxGame.beginPath();
+    ctxGame.fillStyle = "green";
+    ctxGame.arc(snake.head.getCanvasX(), snake.head.getCanvasY(), 15, 0, Math.PI * 2, false);
+    ctxGame.fill();
+
+    //draw tail
+    ctxGame.beginPath();
+    ctxGame.arc(snake.tail.getCanvasX(), snake.tail.getCanvasY(), 15, 0, Math.PI * 2, false);
+    ctxGame.fill();
+
+
+    ctxGame.beginPath();
+    ctxGame.lineWidth = 30;
+    ctxGame.strokeStyle = "green"; 
+    //redraw the back of the snake that was cleared in the 2 squares
+    if (snake.tail.isLeavingSquare()) {
+        //draw to center of previous tail's square
+        ctxGame.moveTo(snake.tail.getCanvasX(), snake.tail.getCanvasY());
+        ctxGame.lineTo(snake.tail.prev.getXOfSquareCenter(), snake.tail.prev.getYOfSquareCenter());
+        ctxGame.stroke();
+    } else { //tail is entering square
+        //draw to center of tail square
+        ctxGame.moveTo(snake.tail.getCanvasX(), snake.tail.getCanvasY());
+        ctxGame.lineTo(snake.tail.getXOfSquareCenter(), snake.tail.getYOfSquareCenter());
+
+        //draw to canvas position of previous node
+        ctxGame.moveTo(snake.tail.getXOfSquareCenter(), snake.tail.getYOfSquareCenter());
+        ctxGame.lineTo(snake.tail.prev.getCanvasX(), snake.tail.prev.getCanvasY());
+        ctxGame.stroke();
+
+        //draw circle in tail's square
+        ctxGame.beginPath();
+        ctxGame.arc(snake.tail.getXOfSquareCenter(), snake.tail.getYOfSquareCenter(), 15, 0, Math.PI * 2, false);
+        ctxGame.fill();
+    }
 }
 
 function drawFruit() {
     ctxGame.fillStyle = "red";
     ctxGame.beginPath();
-    ctxGame.arc(fruitX * SQUARE_SIZE + (SQUARE_SIZE / 2), fruitY * SQUARE_SIZE + (SQUARE_SIZE / 2), SQUARE_SIZE / 3, Math.PI * 2, false);
+    ctxGame.arc(fruitX * SQUARE_SIZE + (SQUARE_SIZE / 2), fruitY * SQUARE_SIZE + (SQUARE_SIZE / 2), SQUARE_SIZE / 3, 0, Math.PI * 2, false);
     ctxGame.fill();
-    ctxGame.stroke();
 }
 
 function spawnFruit() {
