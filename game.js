@@ -212,13 +212,16 @@ document.addEventListener('touchmove', handleTouchMove, false);
 let xDown = null;                                                        
 let yDown = null;
                                                                     
-function handleTouchStart(e) {                                
+function handleTouchStart(e) {      
+    if (state == "ended") {
+        start();
+    }                          
     xDown = e.touches[0].clientX;                                      
     yDown = e.touches[0].clientY;                                      
 };                                                
                                                                          
 function handleTouchMove(e) {
-    if (!xDown || !yDown || state == "ended") {
+    if (!xDown || !yDown) {
         return;
     }
 
