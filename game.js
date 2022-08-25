@@ -26,7 +26,7 @@ f.load().then(font => {
 let run = update;
 
 window.onload = setupCanvas;
-window.onresize = setupCanvas;
+//window.onresize = setupCanvas;
 
 function setupCanvas(e) {
     //screen.width is for mobile devices
@@ -220,7 +220,8 @@ function handleTouchStart(e) {
         start();
     }                          
     xDown = e.touches[0].clientX;                                      
-    yDown = e.touches[0].clientY;                                      
+    yDown = e.touches[0].clientY;    
+    e.preventDefault();                                  
 };                                                
                                                                          
 function handleTouchMove(e) {
