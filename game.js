@@ -5,8 +5,8 @@ const ctxStats = statsCanvas.getContext("2d");
 
 const GRID_WIDTH = 15;
 const GRID_HEIGHT = 15;
-const SQUARE_SIZE = gameCanvas.width / GRID_WIDTH;
 const MAX_OFFSET = 20;
+let SQUARE_SIZE;
 
 let gameIntervalId;
 
@@ -25,10 +25,22 @@ f.load().then(font => {
 
 let run = update;
 
+window.onload = setupCanvas;
+window.onresize = setupCanvas;
+
+function setupCanvas(e) {
+    //screen.width is for mobile devices
+    gameCanvas.width = Math.min(Math.min(window.screen.width, window.innerWidth) - 10, 600);
+    gameCanvas.height = Math.min(Math.min(window.screen.width, window.innerWidth) - 10, 600);
+    SQUARE_SIZE = gameCanvas.width / GRID_WIDTH;
+}
+
+
 function start() {
+    setupCanvas();
     state = "playing";
     score = 0;
-    snake = new Snake(3, 3, "right");
+    snake = new Snake(3, 7, "right");
     gameIntervalId = setInterval(run, 1000 / 120);
     spawnFruit();
     drawScore();
@@ -165,11 +177,11 @@ function drawMenu() {
     ctxGame.fillText("Snake", gameCanvas.width / 2, gameCanvas.height / 2 - 25);
     ctxGame.strokeText("Snake", gameCanvas.width / 2, gameCanvas.height / 2 - 25);
     ctxGame.font = "bold 48px Varela Round";
-    ctxGame.fillText("Space to Play", gameCanvas.width / 2, gameCanvas.height / 2 + 45);
-    ctxGame.strokeText("Space to Play", gameCanvas.width / 2, gameCanvas.height / 2 + 45);
+    //ctxGame.fillText("Space to Play", gameCanvas.width / 2, gameCanvas.height / 2 + 45);
+    //ctxGame.strokeText("Space to Play", gameCanvas.width / 2, gameCanvas.height / 2 + 45);
     ctxGame.font = "18px Varela Round";
     ctxGame.textAlign = "left";
-    ctxGame.fillText("Created by Floomf", 16, gameCanvas.height - 40);
+    ctxGame.fillText("Created by Floomf", 16, gameCanvas.height - 20);
 }
 
 function inputDirection(e) {
