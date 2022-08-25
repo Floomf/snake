@@ -30,8 +30,8 @@ let run = function() {
 function start() {
     state = "playing";
     score = 0;
-    snake = new Snake(3.5, 3.5, "right");
-    gameIntervalId = setInterval(run, 40);
+    snake = new Snake(3, 3, "right");
+    gameIntervalId = setInterval(run, 1000 / 120);
     spawnFruit();
     drawScore();
 }
@@ -44,7 +44,7 @@ function end() {
 
 function update() {
     checkCollision();
-    if (snake.willCollideWithSelf() || snake.willCollideWithBoundary(GRID_WIDTH, GRID_HEIGHT)) {
+    if (snake.collidedWithSelf() || snake.willCollideWithBoundary(GRID_WIDTH, GRID_HEIGHT)) {
         end();
         return;
     }
@@ -52,12 +52,13 @@ function update() {
 
 function checkCollision() {
    if (snake.head.x === fruitX && snake.head.y === fruitY) {
+        console.log("Collided with fruit");
         score++;
         snake.grow();
         drawScore();
         spawnFruit();
    } else {
-        snake.move();
+        snake.moveOffsets();
    }
 }
 
@@ -75,24 +76,24 @@ function drawGame() {
     }
 
     ctxGame.fillStyle = "green";
-    ctxGame.beginPath();
+    /*ctxGame.beginPath();
     ctxGame.arc(SQUARE_SIZE * snake.head.x, SQUARE_SIZE * snake.head.y, SQUARE_SIZE / 3, Math.PI * 2, false);
-    ctxGame.fill();
+    ctxGame.fill();*/
 
 
-    let current = snake.head.next;
-    while (current.next !== null) {
+    let current = snake.head;
+    while (current !== null) {
         ctxGame.beginPath();
         //ctxGame.lineWidth = 1;
-        ctxGame.rect(SQUARE_SIZE * current.x - 15, SQUARE_SIZE * current.y - 15, 30, 30);
+        ctxGame.arc(SQUARE_SIZE * current.x + (2 * current.canvasXOffset), SQUARE_SIZE * current.y + (2 * current.canvasYOffset), 15, Math.PI * 2, false);
         ctxGame.fill();
         //ctxGame.stroke();
         current = current.next;
     }
 
-    ctxGame.beginPath();
+    /*ctxGame.beginPath();
     ctxGame.arc(SQUARE_SIZE * snake.tail.x, SQUARE_SIZE * snake.tail.y, SQUARE_SIZE / 3, Math.PI * 2, false);
-    ctxGame.fill();
+    ctxGame.fill();*/
 
     drawFruit();
 }
@@ -100,16 +101,17 @@ function drawGame() {
 function drawFruit() {
     ctxGame.fillStyle = "red";
     ctxGame.beginPath();
-    ctxGame.arc(fruitX * SQUARE_SIZE, fruitY * SQUARE_SIZE, SQUARE_SIZE / 3, Math.PI * 2, false);
+    ctxGame.arc(fruitX * SQUARE_SIZE + (SQUARE_SIZE / 2), fruitY * SQUARE_SIZE + (SQUARE_SIZE / 2), SQUARE_SIZE / 3, Math.PI * 2, false);
     ctxGame.fill();
     ctxGame.stroke();
 }
 
 function spawnFruit() {
     do {
-        fruitX = Math.floor(Math.random() * GRID_WIDTH) + 0.5;
-        fruitY = Math.floor(Math.random() * GRID_HEIGHT) + 0.5;
+        fruitX = Math.floor(Math.random() * GRID_WIDTH);
+        fruitY = Math.floor(Math.random() * GRID_HEIGHT);
     } while (snake.occupies(fruitX, fruitY))
+    console.log("fruit is at " + fruitX + ", " + fruitY);
 }
 
 function drawScore() {
@@ -141,6 +143,7 @@ function changeDirection(e) {
    if (direction === undefined || !snake.canMove(direction)) {
        return;
    }
+   console.log("Setting next direction to " + direction);
    snake.nextDirection = direction;
 }
 
