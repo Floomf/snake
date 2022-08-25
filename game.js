@@ -199,3 +199,43 @@ document.addEventListener("keydown", e => {
         start();
     }
 });
+
+document.addEventListener('touchstart', handleTouchStart, false);        
+document.addEventListener('touchmove', handleTouchMove, false);
+
+let xDown = null;                                                        
+let yDown = null;
+                                                                    
+function handleTouchStart(e) {                                
+    xDown = e.touches[0].clientX;                                      
+    yDown = e.touches[0].clientY;                                      
+};                                                
+                                                                         
+function handleTouchMove(e) {
+    if (!xDown || !yDown) {
+        return;
+    }
+
+    let xUp = e.touches[0].clientX;                                    
+    let yUp = e.touches[0].clientY;
+
+    let xDiff = xDown - xUp;
+    let yDiff = yDown - yUp;
+                                                                         
+    if (Math.abs(xDiff) > Math.abs(yDiff)) {/*most significant*/
+        if (xDiff < 0) {
+            snake.queueDirection("right");
+        } else {
+            snake.queueDirection("left");
+        }                       
+    } else {
+        if (yDiff < 0) {
+            snake.queueDirection("down");
+        } else { 
+            snake.queueDirection("up");
+        }                                                                 
+    }
+    /* reset values */
+    xDown = null;
+    yDown = null;                                             
+};
