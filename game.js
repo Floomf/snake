@@ -50,13 +50,13 @@ function end() {
 }
 
 function update() {
+    drawFruit();
+    drawSnake();
     checkCollision();
     if (snake.collidedWithSelf() || snake.collidedWithBoundary(GRID_WIDTH, GRID_HEIGHT)) {
         end();
         return;
     }
-    drawFruit();
-    drawSnake();
 }
 
 function checkCollision() {
@@ -80,7 +80,7 @@ function drawBoard() {
 }
 
 function fillSquare(row, col) {
-    console.log("Filling square at " + col + ", " + row);
+    //console.log("Filling square at " + col + ", " + row);
     if ((row % 2 == 0 && col % 2 == 1) || (row % 2 == 1 && col % 2 == 0)) {
         ctxGame.fillStyle = "lightgrey";
     } else {
@@ -172,18 +172,17 @@ function drawMenu() {
     ctxGame.fillText("Created by Floomf", 16, gameCanvas.height - 40);
 }
 
-function changeDirection(e) {
+function inputDirection(e) {
    let direction = snake.keyToDirection(e.key);
-   if (direction === undefined || !snake.canMove(direction)) {
-       return;
+   if (direction !== undefined) {
+    snake.queueDirection(direction);
+    console.log(snake.directions);
    }
-   console.log("Setting next direction to " + direction);
-   snake.nextDirection = direction;
 }
 
 document.addEventListener("keydown", e => {
     if (state === "playing") {
-        changeDirection(e);
+        inputDirection(e);
     } else if (state === "ended" && e.key === " ") {
         start();
     }

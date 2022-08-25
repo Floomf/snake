@@ -76,8 +76,8 @@ class Snake {
 
         this.tail = this.head.next.next;
         this.nextDirection = direction;
+        this.directions = [direction];
         this.growing = false;
-        this.print();
     }
 
     moveOffsets() {
@@ -92,6 +92,7 @@ class Snake {
                 curr.direction = curr.prev.direction;
                 curr = curr.prev;
             }
+            this.loadNextDirection();
             this.head.direction = this.nextDirection;
         } else if (this.head.canvasXOffset == 0 || this.head.canvasYOffset == 0 
                 || this.head.canvasXOffset == MAX_OFFSET || this.head.canvasYOffset == MAX_OFFSET) {
@@ -173,6 +174,23 @@ class Snake {
             current = current.next;
         }
         return false;
+    }
+
+    queueDirection(direction) {
+        if (this.directions[this.directions.length - 1] !== direction && this.directions.length <= 2) {
+            this.directions.push(direction);
+        }
+    }
+
+    loadNextDirection() {
+        if (this.directions.length >= 1) {
+            let direction = this.directions.shift();
+            if (this.canMove(direction)) {
+                this.nextDirection = direction;
+            } else {
+                this.loadNextDirection();
+            }
+        }
     }
 
     canMove(direction) {
