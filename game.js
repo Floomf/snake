@@ -44,7 +44,7 @@ function end() {
 
 function update() {
     checkCollision();
-    if (snake.collidedWithSelf() || snake.willCollideWithBoundary(GRID_WIDTH, GRID_HEIGHT)) {
+    if (snake.collidedWithSelf() || snake.collidedWithBoundary(GRID_WIDTH, GRID_HEIGHT)) {
         end();
         return;
     }
@@ -111,7 +111,6 @@ function spawnFruit() {
         fruitX = Math.floor(Math.random() * GRID_WIDTH);
         fruitY = Math.floor(Math.random() * GRID_HEIGHT);
     } while (snake.occupies(fruitX, fruitY))
-    console.log("fruit is at " + fruitX + ", " + fruitY);
 }
 
 function drawScore() {
