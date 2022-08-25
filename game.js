@@ -20,18 +20,20 @@ let f = new FontFace("Varela Round", "url(https://fonts.gstatic.com/s/varelaroun
 
 f.load().then(font => {
     document.fonts.add(font);
+    setupCanvas();
     drawMenu();
 }, err => console.log(err));
 
 let run = update;
 
-window.onload = setupCanvas;
+//indow.onload = setupCanvas;
 //window.onresize = setupCanvas;
 
-function setupCanvas(e) {
+function setupCanvas() {
     //screen.width is for mobile devices
     gameCanvas.width = Math.min(Math.min(window.screen.width, window.innerWidth) - 10, 600);
     gameCanvas.height = Math.min(Math.min(window.screen.width, window.innerWidth) - 10, 600);
+    //drawMenu();
 }
 
 
@@ -220,11 +222,12 @@ function handleTouchStart(e) {
         start();
     }                          
     xDown = e.touches[0].clientX;                                      
-    yDown = e.touches[0].clientY;    
-    e.preventDefault();                                  
+    yDown = e.touches[0].clientY;                                    
 };                                                
                                                                          
 function handleTouchMove(e) {
+    e.preventDefault();  
+    e.stopPropagation();
     if (!xDown || !yDown) {
         return;
     }
