@@ -192,6 +192,12 @@ function inputDirection(e) {
     }
 }
 
+gameCanvas.addEventListener("click", e => {
+    if (state === "ended") {
+        start();
+    }
+})
+
 document.addEventListener("keydown", e => {
     if (state === "playing") {
         inputDirection(e);
@@ -212,7 +218,7 @@ function handleTouchStart(e) {
 };                                                
                                                                          
 function handleTouchMove(e) {
-    if (!xDown || !yDown) {
+    if (!xDown || !yDown || state == "ended") {
         return;
     }
 
