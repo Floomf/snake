@@ -53,12 +53,7 @@ function start() {
     ctxGame.lineWidth = 3 * SQUARE_SIZE / 4;
     ctxGame.strokeStyle = "green"; 
     ctxGame.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-
     drawBoard();
-    ctxGame.beginPath();
-    ctxGame.moveTo(snake.head.getCanvasX(), snake.head.getCanvasY());
-    ctxGame.lineTo(snake.tail.getCanvasX(), snake.tail.getCanvasY());
-    ctxGame.stroke();
 }
 
 function end() {
@@ -98,7 +93,6 @@ function drawBoard() {
 }
 
 function fillSquare(row, col) {
-    //console.log("Filling square at " + col + ", " + row);
     if ((row % 2 == 0 && col % 2 == 1) || (row % 2 == 1 && col % 2 == 0)) {
         ctxGame.fillStyle = "lightgrey";
     } else {
@@ -116,38 +110,50 @@ function drawSnakeCircle(x, y) {
     ctxGame.fill();
 }
 
+function drawSnakeLine(x, y, x2, y2) {
+    ctxGame.beginPath();
+    ctxGame.moveTo(x, y);
+    ctxGame.lineTo(x2, y2);
+    ctxGame.stroke();
+}
+
 function drawSnake() {
     fillSquare(snake.tail.y, snake.tail.x);
     //clear square tail was in previously (because its circle is drawn in that square when the tail is entering another square)
     fillSquare(snake.tail.y - snake.tail.getNextYOffset(snake.tail.firstDirection), snake.tail.x - snake.tail.getNextXOffset(snake.tail.firstDirection));
 
-    //draw head
     drawSnakeCircle(snake.head.getCanvasX(), snake.head.getCanvasY());
-
-    //draw tail
     drawSnakeCircle(snake.tail.getCanvasX(), snake.tail.getCanvasY())
 
-
-    ctxGame.beginPath();
     ctxGame.strokeStyle = "green"; 
-    //redraw the back of the snake that was cleared in the 2 squares
-    if (snake.tail.isLeavingSquare()) {
-        //draw to center of previous tail's square
-        ctxGame.moveTo(snake.tail.getCanvasX(), snake.tail.getCanvasY());
-        ctxGame.lineTo(snake.tail.prev.getXOfSquareCenter(), snake.tail.prev.getYOfSquareCenter());
-        ctxGame.stroke();
-    } else { //tail is entering square
-        //draw to center of tail square
-        ctxGame.moveTo(snake.tail.getCanvasX(), snake.tail.getCanvasY());
-        ctxGame.lineTo(snake.tail.getXOfSquareCenter(), snake.tail.getYOfSquareCenter());
+    //the way the head and tail are drawn depend on if the nodes are entering or exiting their squares
+    if (snake.head.isLeavingSquare()) {
+        //draw line from head pos to center of head square
+        drawSnakeLine(snake.head.getCanvasX(), snake.head.getCanvasY(), snake.head.getXOfSquareCenter(), snake.head.getYOfSquareCenter());
+        //draw circle at center of head square
+        drawSnakeCircle(snake.head.getXOfSquareCenter(), snake.head.getYOfSquareCenter());
+        //draw line from center of head square to center of next square
+        drawSnakeLine(snake.head.getXOfSquareCenter(), snake.head.getYOfSquareCenter(), snake.head.next.getXOfSquareCenter(), snake.head.next.getYOfSquareCenter());
 
-        //draw to canvas position of previous node
-        ctxGame.moveTo(snake.tail.getXOfSquareCenter(), snake.tail.getYOfSquareCenter());
-        ctxGame.lineTo(snake.tail.prev.getCanvasX(), snake.tail.prev.getCanvasY());
-        ctxGame.stroke();
+        //draw line from tail pos to center of prev square
+        drawSnakeLine(snake.tail.getCanvasX(), snake.tail.getCanvasY(), snake.tail.prev.getXOfSquareCenter(), snake.tail.prev.getYOfSquareCenter());
+    } else {
+        //draw line from head to center of next square
+        drawSnakeLine(snake.head.getCanvasX(), snake.head.getCanvasY(), snake.head.next.getXOfSquareCenter(), snake.head.next.getYOfSquareCenter());
 
-        //draw circle in tail's square
+        //draw line from tail pos to center of tail square
+        drawSnakeLine(snake.tail.getCanvasX(), snake.tail.getCanvasY(), snake.tail.getXOfSquareCenter(), snake.tail.getYOfSquareCenter());
+        //draw circle at center of tail square
         drawSnakeCircle(snake.tail.getXOfSquareCenter(), snake.tail.getYOfSquareCenter());
+        //draw line from center of tail square to center of next square
+        drawSnakeLine(snake.tail.getXOfSquareCenter(), snake.tail.getYOfSquareCenter(), snake.tail.prev.getXOfSquareCenter(), snake.tail.prev.getYOfSquareCenter());
+    }
+
+    let curr = snake.head.next;
+    while (curr.next.next !== null) {
+        drawSnakeCircle(curr.getXOfSquareCenter(), curr.getYOfSquareCenter());
+        drawSnakeLine(curr.getXOfSquareCenter(), curr.getYOfSquareCenter(), curr.next.getXOfSquareCenter(), curr.next.getYOfSquareCenter());
+        curr = curr.next;
     }
 }
 
