@@ -117,6 +117,33 @@ function drawSnakeLine(x, y, x2, y2) {
     ctxGame.stroke();
 }
 
+function drawSnakeEyes() {
+    let leftEyeX = snake.head.getCanvasX();
+    let leftEyeY = snake.head.getCanvasY();
+    let rightEyeX = snake.head.getCanvasX();
+    let rightEyeY = snake.head.getCanvasY();
+    if (snake.head.direction === "up" || snake.head.direction === "down") {
+        leftEyeX -= (SQUARE_SIZE / 6);
+        rightEyeX += (SQUARE_SIZE / 6);
+    } else {
+        leftEyeY -= (SQUARE_SIZE / 6);
+        rightEyeY += (SQUARE_SIZE / 6);
+    }
+
+    ctxGame.beginPath();
+    ctxGame.fillStyle = "white";
+    ctxGame.arc(leftEyeX, leftEyeY, SQUARE_SIZE / 8, 0, Math.PI * 2);
+    ctxGame.fill();
+    ctxGame.arc(rightEyeX, rightEyeY, SQUARE_SIZE / 8, 0, Math.PI * 2);
+    ctxGame.fill();
+    ctxGame.beginPath();
+    ctxGame.fillStyle = "black";
+    ctxGame.arc(leftEyeX, leftEyeY, SQUARE_SIZE / 16, 0, Math.PI * 2);
+    ctxGame.fill();
+    ctxGame.arc(rightEyeX, rightEyeY, SQUARE_SIZE / 16, 0, Math.PI * 2);
+    ctxGame.fill();
+}
+
 function drawSnake() {
     fillSquare(snake.tail.y, snake.tail.x);
     //clear square tail was in previously (because its circle is drawn in that square when the tail is entering another square)
@@ -155,6 +182,8 @@ function drawSnake() {
         drawSnakeLine(curr.getXOfSquareCenter(), curr.getYOfSquareCenter(), curr.next.getXOfSquareCenter(), curr.next.getYOfSquareCenter());
         curr = curr.next;
     }
+
+    drawSnakeEyes();
 }
 
 function drawFruit() {
