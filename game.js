@@ -122,6 +122,8 @@ function drawSnakeEyes() {
     let leftEyeY = snake.head.getCanvasY();
     let rightEyeX = snake.head.getCanvasX();
     let rightEyeY = snake.head.getCanvasY();
+    let pupilXOffset = snake.head.getNextXOffset() * (SQUARE_SIZE / 16);
+    let pupilYOffset = snake.head.getNextYOffset() * (SQUARE_SIZE / 16);
     if (snake.head.direction === "up" || snake.head.direction === "down") {
         leftEyeX -= (SQUARE_SIZE / 6);
         rightEyeX += (SQUARE_SIZE / 6);
@@ -138,9 +140,9 @@ function drawSnakeEyes() {
     ctxGame.fill();
     ctxGame.beginPath();
     ctxGame.fillStyle = "black";
-    ctxGame.arc(leftEyeX, leftEyeY, SQUARE_SIZE / 16, 0, Math.PI * 2);
+    ctxGame.arc(leftEyeX + pupilXOffset, leftEyeY + pupilYOffset, SQUARE_SIZE / 16, 0, Math.PI * 2);
     ctxGame.fill();
-    ctxGame.arc(rightEyeX, rightEyeY, SQUARE_SIZE / 16, 0, Math.PI * 2);
+    ctxGame.arc(rightEyeX + pupilXOffset, rightEyeY + pupilYOffset, SQUARE_SIZE / 16, 0, Math.PI * 2);
     ctxGame.fill();
 }
 
@@ -273,7 +275,7 @@ function handleTouchMove(e) {
     let xDiff = xDown - xUp;
     let yDiff = yDown - yUp;
                                                                          
-    if (Math.abs(xDiff) > Math.abs(yDiff)) {/*most significant*/
+    if (Math.abs(xDiff) > Math.abs(yDiff)) {
         if (xDiff < 0) {
             snake.queueDirection("right");
         } else {
@@ -286,7 +288,6 @@ function handleTouchMove(e) {
             snake.queueDirection("up");
         }                                                                 
     }
-    /* reset values */
     xDown = null;
     yDown = null;                                             
 };
