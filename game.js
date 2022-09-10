@@ -21,7 +21,11 @@ let f = new FontFace("Varela Round", "url(https://fonts.gstatic.com/s/varelaroun
 f.load().then(font => {
     document.fonts.add(font);
     setupCanvas();
+    if (localStorage.getItem("hs_snake") === null) {
+        localStorage.setItem("hs_snake", 0);
+    }
     drawMenu();
+    drawHighscore();
 }, err => console.log(err));
 
 let run = update;
@@ -62,6 +66,11 @@ function end() {
     clearInterval(gameIntervalId);
     state = "ended";
     //drawMenu();
+    if (score > localStorage.getItem("hs_snake")) {
+        localStorage.setItem("hs_snake", score);
+        drawHighscore();
+        window.alert("NEW HIGH SCORE!");
+    }
 }
 
 function update() {
@@ -211,7 +220,15 @@ function drawScore() {
     ctxStats.fillText("Score", statsCanvas.width / 4, statsCanvas.height / (5 / 2));
     ctxStats.font = statsCanvas.height / (7 / 2) + "px Varela Round";
     ctxStats.fillText(score, statsCanvas.width / 4, statsCanvas.height / (5 / 4));
+}
 
+function drawHighscore() {
+    ctxStats.clearRect(statsCanvas.width / 2, 0, statsCanvas.width, statsCanvas.height);
+    ctxStats.textAlign = "center";
+    ctxStats.font = "bold " + (statsCanvas.height / (7 / 2)) + "px Varela Round";
+    ctxStats.fillText("Best", 3 * statsCanvas.width / 4, statsCanvas.height / (5 / 2));
+    ctxStats.font = statsCanvas.height / (7 / 2) + "px Varela Round";
+    ctxStats.fillText(localStorage.getItem("hs_snake"), 3 * statsCanvas.width / 4, statsCanvas.height / (5 / 4));
 }
 
 function drawMenu() {
