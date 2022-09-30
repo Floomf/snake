@@ -1,2 +1,3 @@
-# snake
-Snake game with html canvas
+# [Live Demo](https://aaluzzi.github.io/snake/)
+
+
