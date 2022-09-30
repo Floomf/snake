@@ -234,16 +234,13 @@ function drawHighscore() {
 function drawMenu() {
     ctxGame.textAlign = "center";
     ctxGame.shadowColor = "rgba(0,0,0,0)";
-    ctxGame.font = 'bold 128px Varela Round';
-    ctxGame.lineWidth = 1;
-    ctxGame.fillText("Snake", gameCanvas.width / 2, gameCanvas.height / 2 - 25);
-    ctxGame.strokeText("Snake", gameCanvas.width / 2, gameCanvas.height / 2 - 25);
-    ctxGame.font = "bold 48px Varela Round";
-    //ctxGame.fillText("Space to Play", gameCanvas.width / 2, gameCanvas.height / 2 + 45);
+    ctxGame.font = "bold " + (gameCanvas.height / 4) + "px Varela Round";
+    ctxGame.fillStyle = "green";
+    ctxGame.fillText("Snake", gameCanvas.width / 2, gameCanvas.height / 2);
+    ctxGame.fillStyle = "black";
+    ctxGame.font = "bold " + (gameCanvas.height / 12) + "px Varela Round";
+    ctxGame.fillText("Click to Play", gameCanvas.width / 2, gameCanvas.height / 2 + (gameCanvas.height / 8));
     //ctxGame.strokeText("Space to Play", gameCanvas.width / 2, gameCanvas.height / 2 + 45);
-    ctxGame.font = "18px Varela Round";
-    ctxGame.textAlign = "left";
-    ctxGame.fillText("Created by Floomf", 16, gameCanvas.height - 20);
 }
 
 function inputDirection(e) {
